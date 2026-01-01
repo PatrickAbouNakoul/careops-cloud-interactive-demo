@@ -22,50 +22,40 @@ import {
   BadgeCheck,
 } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
+/* ---------------------------
+   SIMPLE DEMO COMPONENTS
+   (Self-contained: no shadcn/ui)
+---------------------------- */
 
-// SIMPLE DEMO COMPONENTS (to avoid missing UI libs)
+const cn = (...classes) => classes.filter(Boolean).join(" ");
 
 const Card = ({ className = "", children }) => (
-  <div className={`rounded-2xl ${className}`}>{children}</div>
+  <div className={cn("rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl", className)}>
+    {children}
+  </div>
 );
 
 const CardHeader = ({ className = "", children }) => (
-  <div className={`p-4 ${className}`}>{children}</div>
+  <div className={cn("px-6 py-5", className)}>{children}</div>
 );
 
 const CardTitle = ({ className = "", children }) => (
-  <h3 className={`font-semibold ${className}`}>{children}</h3>
+  <h3 className={cn("text-lg font-semibold text-white", className)}>{children}</h3>
 );
 
 const CardContent = ({ className = "", children }) => (
-  <div className={`p-4 ${className}`}>{children}</div>
+  <div className={cn("p-6", className)}>{children}</div>
 );
 
 const Button = ({ className = "", variant, children, ...props }) => (
   <button
-    className={`px-4 py-2 rounded-xl ${
+    className={cn(
+      "inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-2 text-sm font-medium transition",
       variant === "outline"
-        ? "border border-white/20"
-        : "bg-white/10"
-    } ${className}`}
+        ? "border border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
+        : "bg-white/10 text-white hover:bg-white/15",
+      className
+    )}
     {...props}
   >
     {children}
@@ -73,29 +63,38 @@ const Button = ({ className = "", variant, children, ...props }) => (
 );
 
 const Badge = ({ className = "", children }) => (
-  <span className={`text-xs px-2 py-1 rounded-full ${className}`}>
+  <span
+    className={cn(
+      "inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-200",
+      className
+    )}
+  >
     {children}
   </span>
 );
 
-const Input = (props) => (
+const Input = ({ className = "", ...props }) => (
   <input
     {...props}
-    className="w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2"
+    className={cn(
+      "h-11 w-full rounded-2xl border border-white/10 bg-white/5 px-3 text-slate-100 placeholder:text-slate-500 outline-none",
+      className
+    )}
   />
 );
 
 const Progress = ({ value = 0 }) => (
-  <div className="w-full h-2 bg-white/10 rounded-full">
+  <div className="w-full overflow-hidden rounded-full bg-white/10">
     <div
-      className="h-2 bg-white/30 rounded-full"
-      style={{ width: `${value}%` }}
+      className="h-2 rounded-full bg-white/30"
+      style={{ width: `${Math.max(0, Math.min(100, value))}%` }}
     />
   </div>
 );
 
-
-const cn = (...classes) => classes.filter(Boolean).join(" ");
+/* ---------------------------
+   VISUALS
+---------------------------- */
 
 function GlowBg() {
   return (
@@ -110,19 +109,6 @@ function GlowBg() {
   );
 }
 
-function GlassCard({ className, children }) {
-  return (
-    <Card
-      className={cn(
-        "rounded-3xl border-white/10 bg-white/5 backdrop-blur-xl shadow-[0_20px_60px_-30px_rgba(0,0,0,0.7)]",
-        className
-      )}
-    >
-      {children}
-    </Card>
-  );
-}
-
 function Pill({ icon: Icon, label, tone = "neutral" }) {
   const toneMap = {
     neutral: "bg-white/5 text-slate-200 border-white/10",
@@ -132,12 +118,7 @@ function Pill({ icon: Icon, label, tone = "neutral" }) {
     info: "bg-cyan-500/10 text-cyan-200 border-cyan-500/20",
   };
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs",
-        toneMap[tone]
-      )}
-    >
+    <span className={cn("inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs", toneMap[tone])}>
       {Icon ? <Icon className="h-3.5 w-3.5" /> : null}
       {label}
     </span>
@@ -145,13 +126,6 @@ function Pill({ icon: Icon, label, tone = "neutral" }) {
 }
 
 function MetricCard({ title, value, sub, icon: Icon, tone = "neutral", trend }) {
-  const toneStyles = {
-    neutral: "from-white/10 to-white/0",
-    good: "from-emerald-500/20 to-white/0",
-    warn: "from-amber-500/20 to-white/0",
-    bad: "from-rose-500/20 to-white/0",
-    info: "from-cyan-500/20 to-white/0",
-  };
   const valueStyles = {
     neutral: "text-white",
     good: "text-emerald-200",
@@ -161,27 +135,14 @@ function MetricCard({ title, value, sub, icon: Icon, tone = "neutral", trend }) 
   };
 
   return (
-    <GlassCard className="relative overflow-hidden">
-      <div
-        className={cn(
-          "absolute inset-0 bg-gradient-to-br opacity-100",
-          toneStyles[tone]
-        )}
-      />
-      <div className="absolute inset-0 opacity-30 [mask-image:radial-gradient(ellipse_at_top,black,transparent_55%)]">
-        <div className="h-full w-full bg-[linear-gradient(to_right,rgba(255,255,255,0.15)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:26px_26px]" />
-      </div>
+    <Card className="relative overflow-hidden shadow-[0_20px_60px_-30px_rgba(0,0,0,0.7)]">
       <CardContent className="relative p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm text-slate-300">{title}</p>
             <div className="mt-2 flex items-baseline gap-2">
-              <p className={cn("text-3xl font-semibold", valueStyles[tone])}>
-                {value}
-              </p>
-              {trend ? (
-                <span className="text-xs text-slate-300">{trend}</span>
-              ) : null}
+              <p className={cn("text-3xl font-semibold", valueStyles[tone])}>{value}</p>
+              {trend ? <span className="text-xs text-slate-300">{trend}</span> : null}
             </div>
             {sub ? <p className="mt-2 text-xs text-slate-400">{sub}</p> : null}
           </div>
@@ -190,7 +151,7 @@ function MetricCard({ title, value, sub, icon: Icon, tone = "neutral", trend }) 
           </div>
         </div>
       </CardContent>
-    </GlassCard>
+    </Card>
   );
 }
 
@@ -203,6 +164,10 @@ function SeverityBadge({ severity }) {
   const s = map[severity] || map.Low;
   return <Pill icon={AlertTriangle} label={s.label} tone={s.tone} />;
 }
+
+/* ---------------------------
+   DRAWER + CONNECT MODAL
+---------------------------- */
 
 function Drawer({ open, onClose, title, children }) {
   return (
@@ -228,12 +193,8 @@ function Drawer({ open, onClose, title, children }) {
                 <p className="text-xs text-slate-400">CareOps Cloud</p>
                 <h3 className="text-lg font-semibold text-white">{title}</h3>
               </div>
-              <Button
-                variant="outline"
-                className="rounded-2xl border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
-                onClick={onClose}
-              >
-                <X className="mr-2 h-4 w-4" />
+              <Button variant="outline" onClick={onClose}>
+                <X className="h-4 w-4" />
                 Close
               </Button>
             </div>
@@ -292,24 +253,15 @@ function ConnectModal({ open, onClose }) {
               <div>
                 <div className="flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-cyan-200" />
-                  <p className="text-xs text-slate-400">
-                    One-time clinic connection (read-only)
-                  </p>
+                  <p className="text-xs text-slate-400">One-time clinic connection (read-only)</p>
                 </div>
-                <h3 className="mt-1 text-xl font-semibold text-white">
-                  Connect your practice system
-                </h3>
+                <h3 className="mt-1 text-xl font-semibold text-white">Connect your practice system</h3>
                 <p className="mt-2 text-sm text-slate-300">
-                  CareOps Cloud monitors operational signals only. No clinical notes.
-                  Disconnect anytime.
+                  CareOps Cloud monitors operational signals only. No clinical notes. Disconnect anytime.
                 </p>
               </div>
-              <Button
-                variant="outline"
-                className="rounded-2xl border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
-                onClick={onClose}
-              >
-                <X className="mr-2 h-4 w-4" />
+              <Button variant="outline" onClick={onClose}>
+                <X className="h-4 w-4" />
                 Close
               </Button>
             </div>
@@ -348,31 +300,19 @@ function ConnectModal({ open, onClose }) {
                   <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-white">
-                          Connecting securely…
-                        </p>
-                        <p className="mt-1 text-sm text-slate-300">
-                          We are syncing appointments and workflow signals.
-                        </p>
+                        <p className="text-sm font-medium text-white">Connecting securely…</p>
+                        <p className="mt-1 text-sm text-slate-300">We are syncing appointments and workflow signals.</p>
                       </div>
                       <Pill icon={LinkIcon} label="Secure link" tone="info" />
                     </div>
                     <div className="mt-4">
                       <Progress value={progress} />
                       <p className="mt-2 text-xs text-slate-400">
-                        {progress < 45
-                          ? "Verifying access"
-                          : progress < 80
-                          ? "Syncing the next 7 days"
-                          : progress < 100
-                          ? "Finalising"
-                          : "Done"}
+                        {progress < 45 ? "Verifying access" : progress < 80 ? "Syncing the next 7 days" : "Finalising"}
                       </p>
                     </div>
                   </div>
-                  <div className="mt-5 text-xs text-slate-400">
-                    Tip: You can disconnect any time in Settings → Integrations.
-                  </div>
+                  <div className="mt-5 text-xs text-slate-400">Tip: You can disconnect any time in Settings → Integrations.</div>
                 </>
               ) : (
                 <>
@@ -382,16 +322,14 @@ function ConnectModal({ open, onClose }) {
                       <div>
                         <p className="text-sm font-medium text-white">Connected</p>
                         <p className="mt-1 text-sm text-slate-200">
-                          Your clinic is now linked. CareOps Cloud will monitor in the
-                          background.
+                          Your clinic is now linked. CareOps Cloud will monitor in the background.
                         </p>
                       </div>
                     </div>
                   </div>
                   <div className="mt-5 flex justify-end">
-                    <Button className="rounded-2xl" onClick={onClose}>
-                      Go to dashboard
-                      <ArrowUpRight className="ml-2 h-4 w-4" />
+                    <Button onClick={onClose}>
+                      Go to dashboard <ArrowUpRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </>
@@ -404,12 +342,17 @@ function ConnectModal({ open, onClose }) {
   );
 }
 
+/* ---------------------------
+   MAIN APP
+---------------------------- */
+
 export default function CareOpsDashboard() {
   const [connectOpen, setConnectOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedAlertId, setSelectedAlertId] = useState("A1010");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
+  const [infoTab, setInfoTab] = useState("how"); // how | rules | trust
 
   const alerts = useMemo(
     () => [
@@ -421,15 +364,8 @@ export default function CareOpsDashboard() {
         type: "No-show risk",
         eta: "Today",
         owner: "Reception",
-        rationale: [
-          "No response to confirmation",
-          "Long consult (30 min)",
-          "Booked late (previous evening)",
-        ],
-        suggested: [
-          "Call patient to confirm",
-          "If no response, offer slot to waitlist",
-        ],
+        rationale: ["No response to confirmation", "Long consult (30 min)", "Booked late (previous evening)"],
+        suggested: ["Call patient to confirm", "If no response, offer slot to waitlist"],
       },
       {
         id: "A1002",
@@ -439,15 +375,8 @@ export default function CareOpsDashboard() {
         type: "Follow-up gap",
         eta: "Within 24h",
         owner: "Practice manager",
-        rationale: [
-          "Follow-up required = Yes",
-          "No follow-up action logged",
-          "72h since completion threshold approaching",
-        ],
-        suggested: [
-          "Create recall task",
-          "Assign to provider for review",
-        ],
+        rationale: ["Follow-up required = Yes", "No follow-up action logged", "72h since completion threshold approaching"],
+        suggested: ["Create recall task", "Assign to provider for review"],
       },
       {
         id: "A1010",
@@ -457,11 +386,7 @@ export default function CareOpsDashboard() {
         type: "Confirmation",
         eta: "Next 3h",
         owner: "Reception",
-        rationale: [
-          "Booked this morning",
-          "No response yet",
-          "Routine slot (15 min)",
-        ],
+        rationale: ["Booked this morning", "No response yet", "Routine slot (15 min)"],
         suggested: ["Send quick confirmation SMS", "No further action if confirmed"],
       },
     ],
@@ -491,12 +416,8 @@ export default function CareOpsDashboard() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-xs text-slate-400">Workspace</p>
-                  <p className="mt-1 text-lg font-semibold text-white">
-                    CareOps Cloud
-                  </p>
-                  <p className="mt-1 text-xs text-slate-400">
-                    Clinic Ops • No clinical data
-                  </p>
+                  <p className="mt-1 text-lg font-semibold text-white">CareOps Cloud</p>
+                  <p className="mt-1 text-xs text-slate-400">Clinic Ops • No clinical data</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
                   <Sparkles className="h-4 w-4 text-cyan-200" />
@@ -530,23 +451,13 @@ export default function CareOpsDashboard() {
 
             <div className="rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
               <p className="text-sm font-medium text-white">Integration</p>
-              <p className="mt-1 text-xs text-slate-400">
-                Connect once at the clinic level.
-              </p>
-              <Button
-                className="mt-4 w-full rounded-2xl"
-                onClick={() => setConnectOpen(true)}
-              >
-                <Plug className="mr-2 h-4 w-4" />
+              <p className="mt-1 text-xs text-slate-400">Connect once at the clinic level.</p>
+              <Button className="mt-4 w-full" onClick={() => setConnectOpen(true)}>
+                <Plug className="h-4 w-4" />
                 Connect system
               </Button>
-              <Button
-                variant="outline"
-                className="mt-2 w-full rounded-2xl border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
-                onClick={() => setConnectOpen(true)}
-              >
-                View options
-                <ChevronRight className="ml-2 h-4 w-4" />
+              <Button variant="outline" className="mt-2 w-full" onClick={() => setConnectOpen(true)}>
+                View options <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -557,12 +468,9 @@ export default function CareOpsDashboard() {
           {/* Top bar */}
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-2xl font-semibold text-white">
-                Operations dashboard
-              </h1>
+              <h1 className="text-2xl font-semibold text-white">Operations dashboard</h1>
               <p className="mt-1 text-sm text-slate-300">
-                Quiet monitoring. Clear priorities. Your clinical software stays the
-                same.
+                Quiet monitoring. Clear priorities. Your clinical software stays the same.
               </p>
             </div>
 
@@ -573,26 +481,26 @@ export default function CareOpsDashboard() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search alerts, types…"
-                  className="h-11 rounded-2xl border-white/10 bg-white/5 pl-10 text-slate-100 placeholder:text-slate-500"
+                  className="pl-10"
                 />
               </div>
-              <Select value={filter} onValueChange={setFilter}>
-                <SelectTrigger className="h-11 w-[170px] rounded-2xl border-white/10 bg-white/5 text-slate-100">
-                  <Filter className="mr-2 h-4 w-4 text-slate-400" />
-                  <SelectValue placeholder="Filter" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All priorities</SelectItem>
-                  <SelectItem value="High">High</SelectItem>
-                  <SelectItem value="Medium">Medium</SelectItem>
-                  <SelectItem value="Low">Low</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button
-                className="h-11 rounded-2xl"
-                onClick={() => setConnectOpen(true)}
-              >
-                <Plug className="mr-2 h-4 w-4" />
+
+              <div className="flex h-11 items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3">
+                <Filter className="h-4 w-4 text-slate-400" />
+                <select
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  className="h-10 bg-transparent text-sm text-slate-100 outline-none"
+                >
+                  <option value="All">All priorities</option>
+                  <option value="High">High</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Low">Low</option>
+                </select>
+              </div>
+
+              <Button className="h-11" onClick={() => setConnectOpen(true)}>
+                <Plug className="h-4 w-4" />
                 Connect
               </Button>
             </div>
@@ -600,237 +508,180 @@ export default function CareOpsDashboard() {
 
           {/* KPIs */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <MetricCard
-              title="Today’s appointments"
-              value="42"
-              sub="Across 3 providers"
-              icon={Calendar}
-              tone="neutral"
-              trend="+6 vs last Thu"
-            />
-            <MetricCard
-              title="High-risk no-shows"
-              value="3"
-              sub="Priority: confirm now"
-              icon={AlertTriangle}
-              tone="warn"
-              trend="Protect ~90 mins"
-            />
-            <MetricCard
-              title="Follow-ups missing"
-              value="2"
-              sub="Needs action in 24h"
-              icon={Bell}
-              tone="bad"
-              trend="Reduce gaps"
-            />
-            <MetricCard
-              title="Automation health"
-              value="Good"
-              sub="Sync running normally"
-              icon={Activity}
-              tone="good"
-              trend="Last sync: 9 min"
-            />
+            <MetricCard title="Today’s appointments" value="42" sub="Across 3 providers" icon={Calendar} trend="+6 vs last Thu" />
+            <MetricCard title="High-risk no-shows" value="3" sub="Priority: confirm now" icon={AlertTriangle} tone="warn" trend="Protect ~90 mins" />
+            <MetricCard title="Follow-ups missing" value="2" sub="Needs action in 24h" icon={Bell} tone="bad" trend="Reduce gaps" />
+            <MetricCard title="Automation health" value="Good" sub="Sync running normally" icon={Activity} tone="good" trend="Last sync: 9 min" />
           </div>
 
           {/* Alerts + Details */}
           <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-5">
-            <GlassCard className="lg:col-span-3">
+            <Card className="lg:col-span-3 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.7)]">
               <CardHeader className="border-b border-white/10">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <CardTitle className="text-white">Priority alerts</CardTitle>
-                    <p className="mt-1 text-sm text-slate-300">
-                      Only the items most likely to cause loss or disruption.
-                    </p>
+                    <CardTitle>Priority alerts</CardTitle>
+                    <p className="mt-1 text-sm text-slate-300">Only the items most likely to cause loss or disruption.</p>
                   </div>
-                  <Badge className="rounded-full border border-white/10 bg-white/5 text-slate-200">
-                    {filteredAlerts.length} showing
-                  </Badge>
+                  <Badge>{filteredAlerts.length} showing</Badge>
                 </div>
               </CardHeader>
-              <CardContent className="p-0">
-                <div className="divide-y divide-white/10">
-                  {filteredAlerts.map((a) => {
-                    const active = a.id === selectedAlertId;
-                    return (
-                      <button
-                        key={a.id}
-                        onClick={() => {
-                          setSelectedAlertId(a.id);
-                          setDrawerOpen(true);
-                        }}
-                        className={cn(
-                          "w-full text-left transition",
-                          active ? "bg-white/10" : "hover:bg-white/5"
-                        )}
-                      >
-                        <div className="flex items-start justify-between gap-4 px-6 py-5">
-                          <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <p className="truncate font-medium text-white">
-                                {a.title}
-                              </p>
-                              <SeverityBadge severity={a.severity} />
-                              <Pill icon={Clock} label={a.eta} tone="neutral" />
-                            </div>
-                            <p className="mt-2 text-sm text-slate-300">
-                              {a.subtitle}
-                            </p>
-                            <div className="mt-3 flex flex-wrap items-center gap-2">
-                              <Pill icon={Bell} label={a.type} tone="info" />
-                              <Pill icon={Users} label={a.owner} tone="neutral" />
-                            </div>
-                          </div>
-                          <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-slate-400" />
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </GlassCard>
 
-            <GlassCard className="lg:col-span-2">
+              <div className="divide-y divide-white/10">
+                {filteredAlerts.map((a) => {
+                  const active = a.id === selectedAlertId;
+                  return (
+                    <button
+                      key={a.id}
+                      onClick={() => {
+                        setSelectedAlertId(a.id);
+                        setDrawerOpen(true);
+                      }}
+                      className={cn("w-full text-left transition", active ? "bg-white/10" : "hover:bg-white/5")}
+                    >
+                      <div className="flex items-start justify-between gap-4 px-6 py-5">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="truncate font-medium text-white">{a.title}</p>
+                            <SeverityBadge severity={a.severity} />
+                            <Pill icon={Clock} label={a.eta} tone="neutral" />
+                          </div>
+                          <p className="mt-2 text-sm text-slate-300">{a.subtitle}</p>
+                          <div className="mt-3 flex flex-wrap items-center gap-2">
+                            <Pill icon={Bell} label={a.type} tone="info" />
+                            <Pill icon={Users} label={a.owner} tone="neutral" />
+                          </div>
+                        </div>
+                        <ChevronRight className="mt-1 h-5 w-5 shrink-0 text-slate-400" />
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </Card>
+
+            <Card className="lg:col-span-2 shadow-[0_20px_60px_-30px_rgba(0,0,0,0.7)]">
               <CardHeader className="border-b border-white/10">
-                <CardTitle className="text-white">What CareOps does</CardTitle>
-                <p className="mt-1 text-sm text-slate-300">
-                  Simple, predictable operations oversight.
-                </p>
+                <CardTitle>What CareOps does</CardTitle>
+                <p className="mt-1 text-sm text-slate-300">Simple, predictable operations oversight.</p>
               </CardHeader>
+
               <CardContent className="p-6">
-                <Tabs defaultValue="how" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3 rounded-2xl border border-white/10 bg-white/5">
-                    <TabsTrigger value="how">How</TabsTrigger>
-                    <TabsTrigger value="rules">Rules</TabsTrigger>
-                    <TabsTrigger value="trust">Trust</TabsTrigger>
-                  </TabsList>
+                <div className="grid grid-cols-3 gap-2 rounded-2xl border border-white/10 bg-white/5 p-2">
+                  <button
+                    onClick={() => setInfoTab("how")}
+                    className={cn("rounded-xl px-3 py-2 text-sm", infoTab === "how" ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/10")}
+                  >
+                    How
+                  </button>
+                  <button
+                    onClick={() => setInfoTab("rules")}
+                    className={cn("rounded-xl px-3 py-2 text-sm", infoTab === "rules" ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/10")}
+                  >
+                    Rules
+                  </button>
+                  <button
+                    onClick={() => setInfoTab("trust")}
+                    className={cn("rounded-xl px-3 py-2 text-sm", infoTab === "trust" ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/10")}
+                  >
+                    Trust
+                  </button>
+                </div>
 
-                  <TabsContent value="how" className="mt-4">
-                    <div className="space-y-3">
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
-                            <Plug className="h-4 w-4 text-slate-200" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-white">Connect once</p>
-                            <p className="mt-1 text-sm text-slate-300">
-                              Practice manager authorises a read-only connection.
-                            </p>
-                          </div>
+                {infoTab === "how" ? (
+                  <div className="mt-4 space-y-3">
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
+                          <Plug className="h-4 w-4 text-slate-200" />
                         </div>
-                      </div>
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
-                            <Activity className="h-4 w-4 text-slate-200" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-white">Monitor quietly</p>
-                            <p className="mt-1 text-sm text-slate-300">
-                              We track appointments, status changes, and timing.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <div className="flex items-start gap-3">
-                          <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
-                            <Bell className="h-4 w-4 text-slate-200" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-white">Alert only when it matters</p>
-                            <p className="mt-1 text-sm text-slate-300">
-                              Staff focus on the 2–3 actions that protect the day.
-                            </p>
-                          </div>
+                        <div>
+                          <p className="font-medium text-white">Connect once</p>
+                          <p className="mt-1 text-sm text-slate-300">Practice manager authorises a read-only connection.</p>
                         </div>
                       </div>
                     </div>
-                  </TabsContent>
 
-                  <TabsContent value="rules" className="mt-4">
-                    <div className="space-y-3">
-                      <p className="text-sm text-slate-300">
-                        No black boxes. Clear rules your clinic can understand.
-                      </p>
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <p className="text-sm font-medium text-white">No-show risk</p>
-                        <p className="mt-1 text-sm text-slate-300">
-                          Prioritises long slots + no response + late booking.
-                        </p>
-                      </div>
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <p className="text-sm font-medium text-white">Follow-up gaps</p>
-                        <p className="mt-1 text-sm text-slate-300">
-                          Flags when follow-up required but no action is recorded.
-                        </p>
-                      </div>
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <p className="text-sm font-medium text-white">Revenue leakage</p>
-                        <p className="mt-1 text-sm text-slate-300">
-                          Highlights completed appointments that remain unbilled.
-                        </p>
-                      </div>
-                    </div>
-                  </TabsContent>
-
-                  <TabsContent value="trust" className="mt-4">
-                    <div className="space-y-3">
-                      <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
-                        <div className="flex items-start gap-3">
-                          <ShieldCheck className="h-5 w-5 text-emerald-200" />
-                          <div>
-                            <p className="text-sm font-medium text-white">
-                              No clinical notes stored
-                            </p>
-                            <p className="mt-1 text-sm text-slate-200">
-                              CareOps reads operational signals only.
-                            </p>
-                          </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
+                          <Activity className="h-4 w-4 text-slate-200" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-white">Monitor quietly</p>
+                          <p className="mt-1 text-sm text-slate-300">We track appointments, status changes, and timing.</p>
                         </div>
                       </div>
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <p className="text-sm font-medium text-white">Audit trail</p>
-                        <p className="mt-1 text-sm text-slate-300">
-                          Every sync and alert is logged for transparency.
-                        </p>
-                      </div>
-                      <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                        <p className="text-sm font-medium text-white">Disconnect anytime</p>
-                        <p className="mt-1 text-sm text-slate-300">
-                          The clinic controls access at all times.
-                        </p>
+                    </div>
+
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <div className="flex items-start gap-3">
+                        <div className="rounded-2xl border border-white/10 bg-white/5 p-2">
+                          <Bell className="h-4 w-4 text-slate-200" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-white">Alert only when it matters</p>
+                          <p className="mt-1 text-sm text-slate-300">Staff focus on the 2–3 actions that protect the day.</p>
+                        </div>
                       </div>
                     </div>
-                  </TabsContent>
-                </Tabs>
+                  </div>
+                ) : infoTab === "rules" ? (
+                  <div className="mt-4 space-y-3">
+                    <p className="text-sm text-slate-300">No black boxes. Clear rules your clinic can understand.</p>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-sm font-medium text-white">No-show risk</p>
+                      <p className="mt-1 text-sm text-slate-300">Prioritises long slots + no response + late booking.</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-sm font-medium text-white">Follow-up gaps</p>
+                      <p className="mt-1 text-sm text-slate-300">Flags when follow-up required but no action is recorded.</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-sm font-medium text-white">Revenue leakage</p>
+                      <p className="mt-1 text-sm text-slate-300">Highlights completed appointments that remain unbilled.</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-4 space-y-3">
+                    <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+                      <div className="flex items-start gap-3">
+                        <ShieldCheck className="h-5 w-5 text-emerald-200" />
+                        <div>
+                          <p className="text-sm font-medium text-white">No clinical notes stored</p>
+                          <p className="mt-1 text-sm text-slate-200">CareOps reads operational signals only.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-sm font-medium text-white">Audit trail</p>
+                      <p className="mt-1 text-sm text-slate-300">Every sync and alert is logged for transparency.</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-sm font-medium text-white">Disconnect anytime</p>
+                      <p className="mt-1 text-sm text-slate-300">The clinic controls access at all times.</p>
+                    </div>
+                  </div>
+                )}
               </CardContent>
-            </GlassCard>
+            </Card>
           </div>
 
-          {/* Mobile-only footer nav hint */}
+          {/* Mobile */}
           <div className="mt-8 flex flex-col gap-3 md:hidden">
-            <Button className="rounded-2xl" onClick={() => setConnectOpen(true)}>
-              <Plug className="mr-2 h-4 w-4" />
+            <Button onClick={() => setConnectOpen(true)}>
+              <Plug className="h-4 w-4" />
               Connect practice system
             </Button>
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
-              Tip: Tap any alert to see why it was flagged and the suggested next
-              step.
+              Tip: Tap any alert to see why it was flagged and the suggested next step.
             </div>
           </div>
         </main>
       </div>
 
       {/* Alert drawer */}
-      <Drawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        title={selected?.title || "Alert"}
-      >
+      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title={selected?.title || "Alert"}>
         <div className="space-y-6">
           <div className="flex flex-wrap items-center gap-2">
             <SeverityBadge severity={selected.severity} />
@@ -861,22 +712,11 @@ export default function CareOpsDashboard() {
               ))}
             </ul>
             <div className="mt-4 flex flex-wrap gap-2">
-              <Button className="rounded-2xl">
-                Mark as handled
-                <CheckCircle2 className="ml-2 h-4 w-4" />
+              <Button>
+                Mark as handled <CheckCircle2 className="h-4 w-4" />
               </Button>
-              <Button
-                variant="outline"
-                className="rounded-2xl border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
-              >
-                Add note
-              </Button>
-              <Button
-                variant="outline"
-                className="rounded-2xl border-white/10 bg-white/5 text-slate-100 hover:bg-white/10"
-              >
-                View related appointments
-              </Button>
+              <Button variant="outline">Add note</Button>
+              <Button variant="outline">View related appointments</Button>
             </div>
           </div>
 
@@ -885,9 +725,7 @@ export default function CareOpsDashboard() {
               <ShieldCheck className="h-5 w-5 text-emerald-200" />
               <div>
                 <p className="text-sm font-medium text-white">Privacy by design</p>
-                <p className="mt-1 text-sm text-slate-200">
-                  This alert is generated from operational signals only.
-                </p>
+                <p className="mt-1 text-sm text-slate-200">This alert is generated from operational signals only.</p>
               </div>
             </div>
           </div>
@@ -899,5 +737,3 @@ export default function CareOpsDashboard() {
     </div>
   );
 }
-
-export default CareOpsDashboard;
